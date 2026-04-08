@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="page-title">Create Staff Account</h2>
+
+<div class="glass-form-wrapper">
+  <form method="post" class="glass-form">
+
+    <label>Full Name</label>
+    <input name="full_name" required>
+
+    <label>Username</label>
+    <input name="username" required>
+
+    <label>Password</label>
+    <input name="password" type="password" required>
+
+    <label>Hospital</label>
+    <select name="hospital_id" required>
+      <option value="">-- Select --</option>
+      {% for h in hospitals %}
+        <option value="{{ h.id }}">{{ h.name }} ({{ h.location }})</option>
+      {% endfor %}
+    </select>
+
+    <button class="btn" type="submit">Create Staff Account</button>
+  </form>
+</div>
+
+{% endblock %}

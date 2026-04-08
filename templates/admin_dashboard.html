@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="page-title">Admin Dashboard</h2>
+
+<div class="admin-grid">
+  <div class="glass-card">
+    <h3>System Statistics</h3>
+    <ul class="stats-list">
+      <li>Hospitals: <b>{{ stats.hospitals }}</b></li>
+      <li>Users: <b>{{ stats.users }}</b></li>
+      <li>Requests: <b>{{ stats.requests }}</b></li>
+      <li>Pending: <b>{{ stats.pending }}</b></li>
+    </ul>
+  </div>
+
+  <div class="glass-card">
+    <h3>Admin Actions</h3>
+    <div class="action-buttons">
+      <a class="btn" href="{{ url_for('admin_hospitals') }}">Manage Hospitals</a>
+      <a class="btn" href="{{ url_for('admin_create_staff') }}">Create Staff Account</a>
+    </div>
+  </div>
+</div>
+
+<h3 class="section-title">Latest Requests</h3>
+
+{% if latest_requests|length == 0 %}
+  <p class="muted center-text">No requests yet.</p>
+{% else %}
+<div class="glass-table-wrapper">
+  <table class="glass-table">
+    <tr>
+      <th>ID</th>
+      <th>Citizen</th>
+      <th>Type</th>
+      <th>Hospital</th>
+      <th>Status</th>
+      <th>Created</th>
+    </tr>
+    {% for r in latest_requests %}
+    <tr>
+      <td>#{{ r.id }}</td>
+      <td>{{ r.citizen.full_name }}</td>
+      <td>{{ r.emergency_type }}</td>
+      <td>{{ r.hospital.name if r.hospital else "None" }}</td>
+      <td><b>{{ r.status }}</b></td>
+      <td>{{ r.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endif %}
+
+{% endblock %}

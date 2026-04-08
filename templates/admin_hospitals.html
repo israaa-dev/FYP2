@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="page-title">Manage Hospitals</h2>
+
+<div class="glass-form-wrapper">
+  <h3>Add Hospital</h3>
+
+  <form method="post" class="glass-form">
+    <label>Name</label>
+    <input name="name" required>
+
+    <label>Location</label>
+    <input name="location" required>
+
+    <label>Available Beds</label>
+    <input name="available_beds" type="number" min="0" value="0">
+
+    <label>Status</label>
+    <select name="status">
+      <option>Open</option>
+      <option>Overloaded</option>
+      <option>Unavailable</option>
+    </select>
+
+    <button class="btn" type="submit">Add Hospital</button>
+  </form>
+</div>
+
+<h3 class="section-title">Hospitals List</h3>
+
+<div class="glass-table-wrapper">
+  <table class="glass-table">
+    <tr>
+      <th>Name</th>
+      <th>Location</th>
+      <th>Status</th>
+      <th>Beds</th>
+    </tr>
+    {% for h in hospitals %}
+    <tr>
+      <td>{{ h.name }}</td>
+      <td>{{ h.location }}</td>
+      <td>{{ h.status }}</td>
+      <td>{{ h.available_beds }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+{% endblock %}

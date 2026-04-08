@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="page-title">Hospitals</h2>
+
+<div class="glass-table-wrapper">
+  <table class="glass-table">
+    <tr>
+      <th>Name</th>
+      <th>Location</th>
+      <th>Status</th>
+      <th>Available Beds</th>
+    </tr>
+    {% for h in hospitals %}
+    <tr>
+      <td>{{ h.name }}</td>
+      <td>{{ h.location }}</td>
+      <td>{{ h.status }}</td>
+      <td>{{ h.available_beds }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+{% endblock %}

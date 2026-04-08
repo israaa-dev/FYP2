@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="page-title">My Requests</h2>
+
+{% if requests_list|length == 0 %}
+  <p class="center-text muted">No requests yet.</p>
+{% else %}
+
+<div class="glass-table-wrapper">
+  <table class="glass-table">
+    <tr>
+      <th>ID</th>
+      <th>Type</th>
+      <th>Location</th>
+      <th>Recommended Hospital</th>
+      <th>Status</th>
+      <th>Created</th>
+      <th>Action</th>
+    </tr>
+    {% for r in requests_list %}
+    <tr>
+      <td>#{{ r.id }}</td>
+      <td>{{ r.emergency_type }}</td>
+      <td>{{ r.location }}</td>
+      <td>{{ r.hospital.name if r.hospital else "None" }}</td>
+      <td><b>{{ r.status }}</b></td>
+      <td>{{ r.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+      <td>
+        {% if r.status not in ["Accepted", "Rejected", "Cancelled"] %}
+        <form method="post" action="{{ url_for('cancel_request', req_id=r.id) }}" class="form-inline-center">
+          <button class="btn danger" type="submit">Cancel</button>
+        </form>
+        {% else %}
+          <span class="muted">—</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+{% endif %}
+
+{% endblock %}

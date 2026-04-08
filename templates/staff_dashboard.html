@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="page-title">Staff Dashboard</h2>
+
+{% if not hospital %}
+  <p class="flash flash-danger center-text">No hospital linked to this staff account.</p>
+{% else %}
+
+<!-- Hospital Info + Update -->
+<div class="glass-form-wrapper">
+  <h3>{{ hospital.name }}</h3>
+  <p class="muted center-text">{{ hospital.location }}</p>
+
+  <form method="post" action="{{ url_for('staff_update_hospital') }}" class="glass-form form-inline-center">
+
+    <div>
+      <label>Status</label>
+      <select name="status">
+        <option {% if hospital.status=='Open' %}selected{% endif %}>Open</option>
+        <option {% if hospital.status=='Overloaded' %}selected{% endif %}>Overloaded</option>
+        <option {% if hospital.status=='Unavailable' %}selected{% endif %}>Unavailable</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Available Beds</label>
+      <input name="available_beds" type="number" min="0" value="{{ hospital.available_beds }}">
+    </div>
+
+    <button class="btn" type="submit">Update</button>
+  </form>
+</div>
+
+<h3 class="section-title">Incoming Requests</h3>
+
+{% if requests_list|length == 0 %}
+  <p class="center-text muted">No requests assigned to this hospital yet.</p>
+{% else %}
+<div class="glass-table-wrapper">
+  <table class="glass-table">
+    <tr>
+      <th>ID</th>
+      <th>Citizen</th>
+      <th>Type</th>
+      <th>Location</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+    {% for r in requests_list %}
+    <tr>
+      <td>#{{ r.id }}</td>
+      <td>{{ r.citizen.full_name }}</td>
+      <td>{{ r.emergency_type }}</td>
+      <td>{{ r.location }}</td>
+      <td><b>{{ r.status }}</b></td>
+      <td>
+        {% if r.status not in ["Accepted", "Rejected", "Cancelled"] %}
+        <form method="post" action="{{ url_for('staff_set_request_status', req_id=r.id) }}" class="form-inline-center">
+          <button class="btn success" name="status" value="Accepted" type="submit">Accept</button>
+          <button class="btn danger" name="status" value="Rejected" type="submit">Reject</button>
+        </form>
+        {% else %}
+          <span class="muted">—</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endif %}
+{% endif %}
+
+{% endblock %}

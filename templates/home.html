@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="hero">
+  <h1>Emergency Medical Response System</h1>
+  <p class="hero-text">
+    A web-based platform designed to assist citizens and hospitals in managing
+    emergency medical requests efficiently and in real time.
+  </p>
+
+  {% if not current_user.is_authenticated %}
+    <div class="hero-actions">
+      <a href="{{ url_for('login') }}" class="btn large">Login</a>
+      <a href="{{ url_for('signup') }}" class="btn large">Signup</a>
+    </div>
+  {% endif %}
+</div>
+
+<div class="info-grid">
+  <div class="info-card">
+    <h3>For Citizens</h3>
+    <p>
+      Submit emergency medical requests quickly and track their status
+      in real time.
+    </p>
+  </div>
+
+  <div class="info-card">
+    <h3>For Hospitals</h3>
+    <p>
+      Manage incoming emergency requests, update bed availability,
+      and respond efficiently.
+    </p>
+  </div>
+
+  <div class="info-card">
+    <h3>System Coordination</h3>
+    <p>
+      The system automatically recommends the most suitable hospital
+      based on availability.
+    </p>
+  </div>
+</div>
+
+{% endblock %}
