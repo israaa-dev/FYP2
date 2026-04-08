@@ -17,16 +17,12 @@ pip install -r requirements.txt
 python app.py
 ```
 
-## Seed admin user
-
-```bash
-python seed.py
-```
-
-Default demo accounts:
+Default demo account:
 
 - `admin / admin123`
 
 ## Deployment note
 
-Locally, the app uses SQLite. On a hosting platform, if `DATABASE_URL` is set, the app uses that database automatically.
+- Locally, the app uses SQLite.
+- On Render, the app uses `DATABASE_URL` from Neon automatically.
+- Demo admin user and hospitals are created automatically on startup.
