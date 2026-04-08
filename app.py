@@ -303,11 +303,7 @@ def create_app():
         }
         latest_requests = EmergencyRequest.query.order_by(EmergencyRequest.created_at.desc()).limit(10).all()
         hospitals = Hospital.query.order_by(Hospital.available_beds.desc(), Hospital.name.asc()).limit(6).all()
-        google_maps_key = os.environ.get("GOOGLE_MAPS_EMBED_KEY")
-        map_embed_url = None
-        if google_maps_key:
-            map_embed_url = f"https://www.google.com/maps/embed/v1/view?key={google_maps_key}&center=31.4433,34.3600&zoom=10&maptype=roadmap"
-        return render_template("admin_dashboard.html", stats=stats, latest_requests=latest_requests, hospitals=hospitals, map_embed_url=map_embed_url)
+        return render_template("admin_dashboard.html", stats=stats, latest_requests=latest_requests, hospitals=hospitals)
 
     @app.route("/admin/hospitals", methods=["GET", "POST"])
     @login_required
@@ -402,4 +398,5 @@ with app.app_context():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
