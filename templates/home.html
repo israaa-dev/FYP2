@@ -1,45 +1,58 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block content %}
 
-<div class="hero">
-  <h1>Emergency Medical Response System</h1>
-  <p class="hero-text">
-    A web-based platform designed to assist citizens and hospitals in managing
-    emergency medical requests efficiently and in real time.
-  </p>
-
-  {% if not current_user.is_authenticated %}
-    <div class="hero-actions">
-      <a href="{{ url_for('login') }}" class="btn large">Login</a>
-      <a href="{{ url_for('signup') }}" class="btn large">Signup</a>
+<section class="landing-hero landing-hero--compact">
+  <div class="landing-hero__content landing-hero__content--compact">
+    <p class="eyebrow">Emergency Coordination Platform</p>
+    <h1>Fast emergency routing for citizens, hospitals, and response staff.</h1>
+    <p class="landing-copy">Track requests, monitor hospital availability, and give admins one clear operational dashboard for medical emergencies across Gaza.</p>
+    <div class="landing-actions">
+      <a class="btn" href="{{ url_for('hospitals') }}">View Hospitals</a>
     </div>
-  {% endif %}
-</div>
+  </div>
 
-<div class="info-grid">
-  <div class="info-card">
+  <div class="landing-hero__panel">
+    <div class="landing-mini-stat landing-mini-stat--red">
+      <span>Total Requests</span>
+      <strong>{{ stats.requests }}</strong>
+    </div>
+    <div class="landing-mini-stat landing-mini-stat--blue">
+      <span>Hospitals</span>
+      <strong>{{ stats.hospitals }}</strong>
+    </div>
+    <div class="landing-mini-stat landing-mini-stat--green">
+      <span>Users</span>
+      <strong>{{ stats.users }}</strong>
+    </div>
+    <div class="landing-mini-stat landing-mini-stat--orange">
+      <span>Active Cases</span>
+      <strong>{{ stats.pending }}</strong>
+    </div>
+  </div>
+</section>
+
+<section class="feature-strip">
+  <article class="feature-card feature-card--citizen">
     <h3>For Citizens</h3>
-    <p>
-      Submit emergency medical requests quickly and track their status
-      in real time.
-    </p>
-  </div>
+    <p>Submit emergency medical requests quickly and track updates in a clear timeline.</p>
+  </article>
 
-  <div class="info-card">
+  <article class="feature-card feature-card--hospital">
     <h3>For Hospitals</h3>
-    <p>
-      Manage incoming emergency requests, update bed availability,
-      and respond efficiently.
-    </p>
-  </div>
+    <p>Review incoming requests, update bed availability, and respond with less delay.</p>
+  </article>
 
-  <div class="info-card">
+  <article class="feature-card feature-card--system">
     <h3>System Coordination</h3>
-    <p>
-      The system automatically recommends the most suitable hospital
-      based on availability.
-    </p>
+    <p>See hospital capacity, request status, and administrative activity from one unified system.</p>
+  </article>
+</section>
+
+<section class="landing-overview landing-overview--single">
+  <div class="overview-card">
+    <h3>Why this system matters</h3>
+    <p>Instead of scattered communication, the platform centralizes emergency request handling and hospital availability into one workflow.</p>
   </div>
-</div>
+</section>
 
 {% endblock %}

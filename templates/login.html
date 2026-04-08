@@ -1,26 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="login-wrapper">
-  <div class="login-card">
-    <h2>Login</h2>
-    <p class="login-subtitle">Emergency Medical Response System</p>
+<section class="auth-shell">
+  <div class="auth-card">
+    <div class="auth-card__header">
+      <h1>Welcome Back!</h1>
+      <p>Login to your account</p>
+    </div>
 
-    <form method="post" class="glass-form">
+    <form method="post" class="auth-form">
       <label>Username</label>
-      <input name="username" required>
+      <input name="username" placeholder="Enter your username" required>
 
       <label>Password</label>
-      <input name="password" type="password" required>
+      <input name="password" type="password" placeholder="Enter your password" required>
 
-      <button class="btn login-btn" type="submit">Login</button>
+      <div class="auth-meta">
+        <span>Secure staff and admin access</span>
+        <a href="{{ url_for('signup') }}">Create account</a>
+      </div>
+
+      <button class="btn auth-btn auth-btn--blue" type="submit">Log In</button>
     </form>
 
-    <p class="muted center-text" style="margin-top:12px;">
-      Don't have an account?
-      <a href="{{ url_for('signup') }}">Signup</a>
-    </p>
+    <div class="auth-divider"><span>Emergency Management System</span></div>
   </div>
-</div>
+</section>
 
 {% endblock %}

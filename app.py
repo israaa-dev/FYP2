@@ -1,4 +1,4 @@
-import os
+﻿import os
 
 from flask import Flask, render_template, redirect, url_for, request, flash, abort
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
@@ -43,9 +43,8 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        return User.query.get(int(user_id))
+        return db.session.get(User, int(user_id))
 
-    # ---------- Helpers ----------
     def require_role(*roles):
         if not current_user.is_authenticated:
             return redirect(url_for("login"))
@@ -53,10 +52,15 @@ def create_app():
             abort(403)
         return None
 
-    # ---------- Public / Citizen ----------
     @app.route("/")
     def home():
-        return render_template("home.html")
+        stats = {
+            "hospitals": Hospital.query.count(),
+            "users": User.query.count(),
+            "requests": EmergencyRequest.query.count(),
+            "pending": EmergencyRequest.query.filter_by(status="Pending").count(),
+        }
+        return render_template("home.html", stats=stats)
 
     @app.route("/hospitals")
     def hospitals():
@@ -66,7 +70,6 @@ def create_app():
     @app.route("/submit", methods=["GET", "POST"])
     @login_required
     def submit_request():
-        # Only citizens can submit requests
         role_check = require_role("citizen")
         if role_check:
             return role_check
@@ -106,7 +109,6 @@ def create_app():
             db.session.commit()
 
             flash(f"Request submitted to {hospital.name}.", "success")
-
             return redirect(url_for("my_requests"))
 
         return render_template("submit_request.html", hospitals=hospitals)
@@ -118,8 +120,7 @@ def create_app():
         if role_check:
             return role_check
 
-        requests_list = EmergencyRequest.query.filter_by(citizen_id=current_user.id)\
-            .order_by(EmergencyRequest.created_at.desc()).all()
+        requests_list = EmergencyRequest.query.filter_by(citizen_id=current_user.id).order_by(EmergencyRequest.created_at.desc()).all()
         return render_template("my_requests.html", requests_list=requests_list)
 
     @app.route("/cancel/<int:req_id>", methods=["POST"])
@@ -142,7 +143,6 @@ def create_app():
         flash("Request cancelled.", "success")
         return redirect(url_for("my_requests"))
 
-    # ---------- Auth ----------
     @app.route("/login", methods=["GET", "POST"])
     def login():
         if request.method == "POST":
@@ -202,7 +202,6 @@ def create_app():
         flash("Logged out.", "info")
         return redirect(url_for("home"))
 
-    # ---------- Staff ----------
     @app.route("/staff")
     @login_required
     def staff_dashboard():
@@ -215,9 +214,7 @@ def create_app():
             return render_template("staff_dashboard.html", hospital=None, requests_list=[])
 
         hospital = Hospital.query.get(current_user.hospital_id)
-        requests_list = EmergencyRequest.query.filter_by(hospital_id=hospital.id)\
-            .order_by(EmergencyRequest.created_at.desc()).all()
-
+        requests_list = EmergencyRequest.query.filter_by(hospital_id=hospital.id).order_by(EmergencyRequest.created_at.desc()).all()
         return render_template("staff_dashboard.html", hospital=hospital, requests_list=requests_list)
 
     @app.route("/staff/update-hospital", methods=["POST"])
@@ -263,12 +260,9 @@ def create_app():
             abort(400)
 
         req_obj = EmergencyRequest.query.get_or_404(req_id)
-
-        # Ensure staff only edits requests for their hospital
         if req_obj.hospital_id != current_user.hospital_id:
             abort(403)
 
-        # Don’t change cancelled requests
         if req_obj.status == "Cancelled":
             flash("Cannot update a cancelled request.", "danger")
             return redirect(url_for("staff_dashboard"))
@@ -283,7 +277,6 @@ def create_app():
             hospital.available_beds -= 1
             req_obj.status = "Accepted"
 
-            # OPTIONAL but recommended
             if hospital.available_beds == 0:
                 hospital.status = "Overloaded"
 
@@ -295,7 +288,6 @@ def create_app():
         flash(f"Request #{req_obj.id} marked as {new_status}.", "success")
         return redirect(url_for("staff_dashboard"))
 
-    # ---------- Admin ----------
     @app.route("/admin")
     @login_required
     def admin_dashboard():
@@ -310,7 +302,12 @@ def create_app():
             "pending": EmergencyRequest.query.filter_by(status="Pending").count(),
         }
         latest_requests = EmergencyRequest.query.order_by(EmergencyRequest.created_at.desc()).limit(10).all()
-        return render_template("admin_dashboard.html", stats=stats, latest_requests=latest_requests)
+        hospitals = Hospital.query.order_by(Hospital.available_beds.desc(), Hospital.name.asc()).limit(6).all()
+        google_maps_key = os.environ.get("GOOGLE_MAPS_EMBED_KEY")
+        map_embed_url = None
+        if google_maps_key:
+            map_embed_url = f"https://www.google.com/maps/embed/v1/view?key={google_maps_key}&center=31.4433,34.3600&zoom=10&maptype=roadmap"
+        return render_template("admin_dashboard.html", stats=stats, latest_requests=latest_requests, hospitals=hospitals, map_embed_url=map_embed_url)
 
     @app.route("/admin/hospitals", methods=["GET", "POST"])
     @login_required
@@ -405,3 +402,4 @@ with app.app_context():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
